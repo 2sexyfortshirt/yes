@@ -1,0 +1,45 @@
+/* About.css */
+
+.about-container {
+    max-width: 800px; /* Максимальная ширина контейнера */
+    margin: 0 auto; /* Центрирование контейнера */
+    padding: 20px; /* Отступы вокруг контейнера */
+    background-color: #f9f9f9; /* Светлый фон */
+    border-radius: 8px; /* Скругленные углы */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+}
+
+.about-container h4 {
+    color: #333; /* Цвет заголовков */
+    margin-bottom: 10px; /* Отступ снизу */
+    font-family: 'Roboto', sans-serif; /* Шрифт заголовков */
+}
+
+.about-container p {
+    color: #555; /* Цвет текста */
+    line-height: 1.6; /* Высота строки для лучшей читаемости */
+}
+
+.about-buttons {
+    margin-top: 20px; /* Отступ сверху */
+}
+
+.about-buttons button {
+    margin: 0 5px; /* Горизонтальные отступы между кнопками */
+}
+
+iframe {
+    border: none; /* Убираем стандартную рамку */
+    border-radius: 8px; /* Скругленные углы для карты */
+}
+
+@media (max-width: 768px) {
+    .about-container {
+        padding: 10px; /* Уменьшаем отступы на мобильных устройствах */
+    }
+
+    iframe {
+        width: 100%; /* Ширина карты на мобильных устройствах */
+        height: 300px; /* Высота карты на мобильных устройствах */
+    }
+}

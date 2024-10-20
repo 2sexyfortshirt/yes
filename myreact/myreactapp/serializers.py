@@ -1,29 +1,60 @@
 from rest_framework import serializers
-from .models import Menu, Dish,Cart, CartItem
+from .models import Menu, Dish,Cart, CartItem,Order,Ingredients
 
 # Укажите поля, которые хотите сериализовать
 
-# Сериализатор для модели Dish
+class CustomBurgerSerializer(serializers.Serializer):
+    ingredients = serializers.PrimaryKeyRelatedField(queryset=Ingredients.objects.all(), many=True)
+
+    def validate_ingredients(self, value):
+        if not value:
+            raise serializers.ValidationError("Необходимо выбрать хотя бы один ингредиент.")
+        return value
+
+
+
+class IngredientsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ingredients
+        fields = ['id' ,'name', 'extra_cost']
+
 class DishSerializer(serializers.ModelSerializer):
+    ingredients = IngredientsSerializer(many=True, read_only=True)
     class Meta:
         model = Dish
-        fields = ['id', 'name', 'description', 'price', 'menu']  # Убедитесь, что поля корректные
+        fields = ['id', 'name', 'description', 'price', 'menu','ingredients','picture']  # Убедитесь, что поля корректные
+
 
 # Сериализатор для модели CartItem
 class CartItemSerializer(serializers.ModelSerializer):
-    dish = DishSerializer()  # Вложенный сериализатор для блюда
+    dish = DishSerializer()
+    ingredients = IngredientsSerializer(many=True, read_only=True)
+
+
+
 
     class Meta:
         model = CartItem
-        fields = [ 'dish', 'quantity']  # Убедитесь, что поля корректные
+        fields = [ 'id','dish', 'quantity','ingredients']  # Убедитесь, что поля корректные
+
+    def update(self, instance, validated_data):
+        new_quantity = validated_data.get('quantity', instance.quantity)
+        if new_quantity > 0:
+            instance.quantity = new_quantity
+            instance.save()
+            return instance
+        else:
+            raise serializers.ValidationError("Количество должно быть больше нуля.")
 
 # Сериализатор для модели Cart
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)  # Вложенный сериализатор для элементов корзины
 
+
     class Meta:
         model = Cart
-        fields = ['id', 'session_key', 'created_at', 'updated_at', 'items']  # Убедитесь, что поля корректные
+        fields = ['id', 'session_key', 'created_at', 'updated_at', 'items','is_ordered']  # Убедитесь, что поля корректные
 
 
 
@@ -33,4 +64,14 @@ class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
         fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    cart = CartSerializer()
+
+
+    class Meta:
+        model = Order
+        fields = ['id', 'cart', 'status','total_price']
+
 

@@ -1,0 +1,161 @@
+/* General body styles */
+body {
+  margin: 0;
+  height: 200vh; /* Make the body tall to allow scrolling */
+  transition: background 0.5s ease; /* Smooth transition for background change */
+  background-color: #f0f4f8; /* Light background color for contrast */
+}
+
+/* Menu container styles */
+.menu-container {
+  position: relative;
+  z-index: 1; /* Ensures the content is above the background */
+  padding: 40px; /* Add more padding for better spacing */
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+}
+
+/* Menu box styles */
+.menu-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px; /* Increased width */
+  height: 120px; /* Increased height */
+  background-color: #4caf50;
+  border: 2px solid #388e3c;
+  border-radius: 60px; /* More rounded */
+  margin: 1.5rem auto; /* Increased margin */
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; /* Add transform for scale effect */
+  font-size: 1.2rem; /* Increased font size for better readability */
+}
+
+.menu-box:hover {
+  background-color: #66bb6a;
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Card styles */
+.menu-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px; /* Rounded corners */
+  padding: 3rem; /* More padding for better spacing */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin: 1.5rem; /* Increased margin for spacing */
+  background-color: #ffffff; /* Card background */
+  height: auto; /* Auto height for flexibility */
+  width:auto;
+  display: flex;
+  flex-direction: column; /* Vertical alignment of content */
+  align-items: center; /* Center items horizontally */
+}
+
+/* Dish name styles */
+.menu-card h6 {
+  font-size: 1.8rem; /* Larger font size for dish name */
+  font-weight: bold; /* Bold font for emphasis */
+  margin-bottom: 0.5rem; /* Space below the name */
+  text-align: center; /* Center text for better alignment */
+  width:170px;
+}
+
+/* Image styles for better responsiveness */
+.menu-card img {
+  width: 100%; /* Make image responsive */
+  height: 180px; /* Fixed height for images */
+  object-fit: cover; /* Cover the area without distortion */
+  border-radius: 8px; /* Rounded corners */
+  margin-bottom: 0.5rem; /* Space below the image */
+}
+
+/* Description styles */
+.menu-card .description {
+  font-size: 1.1rem; /* Slightly larger font size for description */
+  margin-bottom: 1rem; /* Space below the description */
+  text-align: center; /* Center text for better alignment */
+}
+
+/* Price styles */
+.menu-card .price {
+  font-size: 1.5rem; /* Larger font size for price */
+  color: #388e3c; /* Green color for price */
+  margin-top: 0.5rem; /* Margin above the price */
+}
+
+/* Card hover effects */
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Adaptation for mobile devices */
+@media (max-width: 600px) {
+  .menu-box {
+    width: 90px; /* Adjust for smaller screens */
+    height: 90px; /* Adjust for smaller screens */
+    font-size: 0.9rem; /* Adjust font size for mobile */
+  }
+
+  .menu-card {
+    padding: 1rem; /* Adjust padding for smaller screens */
+  }
+
+  .menu-card h6 {
+    font-size: 1.5rem; /* Slightly smaller for mobile */
+  }
+
+  .menu-card .description {
+    font-size: 0.9rem; /* Smaller description text for mobile */
+  }
+
+  .menu-card .price {
+    font-size: 1.2rem; /* Smaller price text for mobile */
+  }
+}
+
+/* List padding removal */
+.MuiList-padding {
+  padding-top: 0;
+}
+
+/* Grid container styles */
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Adjustments for grid items */
+.MuiGrid-root {
+  display: flex;
+  justify-content: center;
+}
+
+/* Menu details text styles */
+.menu-details {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Menu text styles */
+.menu-text {
+  font-size: 1.2rem; /* Slightly larger font size for better readability */
+}
+
+/* Button styles */
+.button-custom {
+  background-color: #388e3c; /* Customize button color */
+  color: white;
+  border-radius: 20px; /* Rounded button */
+  padding: 12px 24px; /* Padding for button */
+  font-size: 1rem; /* Increase font size */
+  margin-top: 1rem; /* Space above the button */
+}
+
+.button-custom:hover {
+  background-color: #66bb6a; /* Lighter green on hover */
+}
