@@ -17,7 +17,7 @@ class IngredientsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredients
-        fields = ['id' ,'name', 'extra_cost']
+        fields = ['id','name', 'extra_cost']
 
 class DishSerializer(serializers.ModelSerializer):
     ingredients = IngredientsSerializer(many=True, read_only=True)

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Cart.css'; // Импорт стилей
+import {Typography,Button} from '@mui/material';
 
 
 axios.defaults.withCredentials = true;
@@ -72,9 +73,20 @@ const Cart = ({ cartData, setCartData}) => {
   }, []); // Вызываем fetchCartItems при изменении updateFlag
 
   if (cartData.length === 0) {
-    return 'корзина пуста'; // Не отображаем ничего, если корзина пуста
+    return (
+      <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+        <Typography variant="h5">Корзина пуста</Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/menu')} // Переход к странице меню
+          style={{ marginTop: '1rem' }}
+        >
+          Вернуться к меню
+        </Button>
+      </div>
+    );
   }
-
   const handlePhoneChange = (event) => {
     setPhone(event.target.value);
   };
@@ -93,6 +105,25 @@ const Cart = ({ cartData, setCartData}) => {
       console.error("Ошибка при удалении предмета:", error);
     }
   };
+  const handleRemoveIngredient = async (ingredientId) => {
+  try {
+    const response = await axios.delete(`http://localhost:8000/api/remove_ingredient/${ingredientId}/`);
+    if (response.data.success) {
+      // Обновляем данные корзины, удаляя выбранный ингредиент
+      setCartData(prevItems =>
+        prevItems.map(item => {
+          const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
+          return { ...item, ingredients: updatedIngredients };
+        })
+      );
+    } else {
+      console.error(response.data.message);
+    }
+  } catch (error) {
+    console.error('Ошибка при удалении ингредиента:', error);
+  }
+};
+
 
   const handleOrder = async () => {
   if (!phone || !deliveryAddress) {
@@ -129,126 +160,97 @@ const Cart = ({ cartData, setCartData}) => {
 
     const uniqueDishTypes = Array.from(new Set(menuData.map(item => item.dish_type)));
 
-  return (
-    <div className="cart-container" style={{ marginTop: '50px' }}>
-      <h1>Корзина</h1>
-      <ul>
-        {cartData.map((item, index) => (
-          <li key={item.id || index}>
-            {item.dish ? (
-              <>
-                <h2>{item.dish.name}</h2>
-                <p>Описание: {item.dish.description}</p>
-                <p>Количество: {item.quantity}</p>
+ return (
+  <div className="cart-container" style={{ marginTop: '50px' }}>
+    <h1>Корзина</h1>
+    <ul>
+      {cartData.map((item, index) => (
+        <li key={item.id || index}>
+          {item.dish ? (
+            <>
+              <h2>{item.dish.name}</h2>
+              <p>Описание: {item.dish.description}</p>
+              <p>Количество: {item.quantity}</p>
 
-                {item.ingredients && item.ingredients.length > 0 ? (
-                  <div>
-                    <h4>Ингредиенты:</h4>
-                    <ul>
-                      {item.ingredients.map((ingredient) => (
-                        <li key={ingredient.id}>
-                          {ingredient.name} (доп. цена: {ingredient.extra_cost})
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p>Ингредиенты не выбраны</p>
-                )}
+              {item.ingredients && item.ingredients.length > 0 ? (
+                <div>
+                  <h4>Ингредиенты:</h4>
+                  <ul>
+                    {item.ingredients.map((ingredient) => (
+                      <li key={ingredient.id}>
+                        {ingredient.name} (доп. цена: {ingredient.extra_cost})
+                        <button onClick={() => handleRemoveIngredient(ingredient.id)}>Удалить ингредиент</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p>Ингредиенты не выбраны</p>
+              )}
 
-                <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
-                <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
-              </>
-            ) : (
-              <>
-                <p>Информация о блюде отсутствует</p>
-
-                {item.ingredients && item.ingredients.length > 0 ? (
-                  <div>
-                    <h4>Ингредиенты:</h4>
-                    <ul>
-                      {item.ingredients.map((ingredient) => (
-                        <li key={ingredient.id}>
-                          {ingredient.name} (доп. цена: {ingredient.extra_cost})
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <p>Ингредиенты не выбраны</p>
-                )}
-                <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-         <div className="dish-type-selection">
-        <h3>Выберите тип блюда</h3>
-        <select onChange={(e) => setSelectedDishType(e.target.value)} value={selectedDishType}>
-          <option value="">Все типы</option>
-          {uniqueDishTypes.map((type) => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="menu-options">
-        <h3>Возможные варианты блюд</h3>
-        <ul>
-          {menuData.length > 0 ? (
-            menuData
-              .filter(item => selectedDishType === '' || item.dish_type === selectedDishType) // Фильтруем по выбранному типу
-              .map((menuItem) => (
-                <li key={menuItem.id}>
-                  <h4>{menuItem.dish_type}</h4>
-                  {menuItem.dishes && menuItem.dishes.map(dish => (
-                    <div key={dish.id}>
-                      <p>{dish.name} - {dish.price} USD</p>
-                      <button onClick={() => handleAddToCartButton(dish.id)}>Добавить в корзину</button>
-                    </div>
-                  ))}
-                </li>
-              ))
+              <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
+              <span>{item.quantity}</span>
+              <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
+              <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
+            </>
           ) : (
-            <p>Меню не доступно.</p>
-          )}
-        </ul>
-      </div>
+            <>
+              <p>Информация о блюде отсутствует</p>
 
-      <div className="phone-form">
-        <label>Ваш номер телефона:</label>
-        <input
-          type="tel"
-          value={phone}
-          onChange={handlePhoneChange}
-          placeholder="+7 123 456 7890"
-          required
-        />
-        <label>Адрес для доставки:</label>
-        <input
-          type="text"
-          value={deliveryAddress}
-          onChange={handleAddressChange}
-        />
-      </div>
-      {cartData.length > 0 && (
-        <button onClick={handleOrder} className="order-button">
-          Оформить заказ
-        </button>
-      )}
-      {orderMessage && <p>{orderMessage}</p>}
-      {orderDetails && (
-        <div className="order-confirmation">
-          <h2>Ваш заказ подтвержден!</h2>
-          <p>Номер заказа: {orderDetails.id}</p>
-          <p>Общая сумма: {orderDetails.total_price} usd</p>
-        </div>
-      )}
+              {item.ingredients && item.ingredients.length > 0 ? (
+                <div>
+                  <h4>Ингредиенты:</h4>
+                  <ul>
+                    {item.ingredients.map((ingredient) => (
+                      <li key={ingredient.id}>
+                        {ingredient.name} (доп. цена: {ingredient.extra_cost})
+                        <button onClick={() => handleRemoveIngredient(ingredient.id)}>Удалить ингредиент</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p>Ингредиенты не выбраны</p>
+              )}
+              {/* Убираем кнопку удаления предмета, если dish равен null */}
+            </>
+          )}
+        </li>
+      ))}
+    </ul>
+
+    <div className="phone-form">
+      <label>Ваш номер телефона:</label>
+      <input
+        type="tel"
+        value={phone}
+        onChange={handlePhoneChange}
+        placeholder="+7 123 456 7890"
+        required
+      />
+      <label>Адрес для доставки:</label>
+      <input
+        type="text"
+        value={deliveryAddress}
+        onChange={handleAddressChange}
+      />
     </div>
-  );
+    {cartData.length > 0 && (
+      <button onClick={handleOrder} className="order-button">
+        Оформить заказ
+      </button>
+    )}
+    {orderMessage && <p>{orderMessage}</p>}
+    {orderDetails && (
+      <div className="order-confirmation">
+        <h2>Ваш заказ подтвержден!</h2>
+        <p>Номер заказа: {orderDetails.id}</p>
+        <p>Общая сумма: {orderDetails.total_price} usd</p>
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default Cart;

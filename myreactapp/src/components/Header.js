@@ -29,6 +29,25 @@ const Header = ({ cartData, setCartData }) => {
       console.error('Ошибка при удалении предмета:', error);
     }
   };
+   const handleRemoveIngredient = async (ingredientId) => {
+  try {
+    const response = await axios.delete(`http://localhost:8000/api/remove_ingredient/${ingredientId}/`);
+    if (response.data.success) {
+      // Обновляем данные корзины, удаляя выбранный ингредиент
+      setCartData(prevItems =>
+        prevItems.map(item => {
+          const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
+          return { ...item, ingredients: updatedIngredients };
+        })
+      );
+    } else {
+      console.error(response.data.message);
+    }
+  } catch (error) {
+    console.error('Ошибка при удалении ингредиента:', error);
+  }
+};
+
 
   const handleOpen = () => {
     setOpen(true);
@@ -39,8 +58,8 @@ const Header = ({ cartData, setCartData }) => {
   };
 
   return (
-    <header style={{ padding: '1rem', backgroundColor: '#f8f8f8', display: 'flex', justifyContent: 'space-between' }}>
-      <h1>ChikoWorldKitchen</h1>
+    <header style={{ padding: '1rem', background: 'linear-gradient(135deg, #f0a830, #8dc26f)', display: 'flex', justifyContent: 'space-between' }}>
+      <h1></h1>
       <div className="floating-cart">
         <IconButton style={{ position: 'relative' }} onClick={handleOpen}>
           <Badge badgeContent={cartItemCount} color="secondary">
@@ -72,19 +91,19 @@ const Header = ({ cartData, setCartData }) => {
           </Box>
 
           {/* Корзина внутри модального окна */}
-          <ul>
-            {localCartData.length === 0 ? (
-              <Typography variant="body1">Корзина пуста</Typography>
-            ) : (
-              localCartData.map((item) => (
-                <li key={item.id} style={{ marginBottom: '1rem' }}>
-                  <h2>{item.dish.name}</h2>
-                  <p>Количество: {item.quantity}</p>
-                  <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
-                </li>
-              ))
-            )}
-          </ul>
+         <ul>
+  {localCartData.length === 0 ? (
+    <Typography variant="body1">Корзина пуста</Typography>
+  ) : (
+    localCartData.map((item) => (
+      <li key={item.id} style={{ marginBottom: '1rem' }}>
+        <h2>{item.dish?.name || 'Без названия'}</h2> {/* Проверка на существование item.dish */}
+        <p>Количество: {item.quantity}</p>
+        <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
+      </li>
+    ))
+  )}
+</ul>
 
           <button onClick={handleClose} style={{ marginTop: '1rem' }}>Закрыть</button>
         </Box>

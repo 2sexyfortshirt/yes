@@ -2,7 +2,7 @@
 from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
-from .views import MenuViewSet, DishViewSet,add_to_cart,get_cart,create_order,update_cart_item_quantity,delete_item,IngredientsList,add_custom_burger_to_cart
+from .views import MenuViewSet, DishViewSet,add_to_cart,get_cart,create_order,update_cart_item_quantity,delete_item,IngredientsList,add_custom_burger_to_cart,remove_ingredient_from_cart
 
 
 # Создайте роутер и зарегистрируйте ViewSets
@@ -22,4 +22,6 @@ urlpatterns = [
     path('api/delete_item/<int:item_id>/',delete_item, name='delete_item'),
     path('api/ingredients/', IngredientsList.as_view(), name='ingredient-list'),
     path('api/cart/add_custom_burger/', add_custom_burger_to_cart, name='add_custom_burger_to_cart'),
+    path('api/remove_ingredient/<int:ingredient_id>/', remove_ingredient_from_cart, name='remove_ingredient_from_cart'),
 ]
+

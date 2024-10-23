@@ -8,6 +8,7 @@ from rest_framework import viewsets
 from rest_framework import generics
 from .models import Menu, Dish,Cart,CartItem
 from .serializers import MenuSerializer, DishSerializer
+from django.shortcuts import get_object_or_404
 
 
 from django.http import JsonResponse
@@ -183,8 +184,10 @@ def delete_item(request,item_id):
 
     try:
         cart_item = CartItem.objects.get(id=item_id)
+
         cart_item.delete()
         cart = Cart.objects.get(session_key=user_session, is_ordered=False)
+
         serializer = CartSerializer(cart)
 
 
@@ -223,3 +226,18 @@ def add_custom_burger_to_cart(request):
             return Response({'message': 'Custom burger added to cart successfully.'}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def remove_ingredient_from_cart(request, ingredient_id):
+    try:
+        # Получаем ингредиент
+        ingredient = get_object_or_404(Ingredients, id=ingredient_id)
+
+        # Удаляем ингредиент из всех связанных CartItems
+        ingredient.cartitem_set.clear()
+
+        return JsonResponse({'success': True, 'message': 'Ингредиент успешно удален.'})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=400)

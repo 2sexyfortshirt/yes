@@ -3,7 +3,9 @@ body {
   margin: 0;
   height: 200vh; /* Make the body tall to allow scrolling */
   transition: background 0.5s ease; /* Smooth transition for background change */
-  background-color: #f0f4f8; /* Light background color for contrast */
+ background: linear-gradient(135deg, #f0a830, #8dc26f);
+
+ /* Light background color for contrast */
 }
 
 /* Menu container styles */
@@ -11,27 +13,13 @@ body {
   position: relative;
   z-index: 1; /* Ensures the content is above the background */
   padding: 40px; /* Add more padding for better spacing */
-  background-color: #ffffff; /* White background for contrast */
+  background-color: grey; /* White background for contrast */
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+
+
 }
 
-/* Menu box styles */
-.menu-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 120px; /* Increased width */
-  height: 120px; /* Increased height */
-  background-color: #4caf50;
-  border: 2px solid #388e3c;
-  border-radius: 60px; /* More rounded */
-  margin: 1.5rem auto; /* Increased margin */
-  color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s; /* Add transform for scale effect */
-  font-size: 1.2rem; /* Increased font size for better readability */
-}
 
 .menu-box:hover {
   background-color: #66bb6a;
@@ -39,20 +27,7 @@ body {
 }
 
 /* Card styles */
-.menu-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 12px; /* Rounded corners */
-  padding: 3rem; /* More padding for better spacing */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  margin: 1.5rem; /* Increased margin for spacing */
-  background-color: #ffffff; /* Card background */
-  height: auto; /* Auto height for flexibility */
-  width:auto;
-  display: flex;
-  flex-direction: column; /* Vertical alignment of content */
-  align-items: center; /* Center items horizontally */
-}
+
 
 /* Dish name styles */
 .menu-card h6 {
@@ -80,11 +55,7 @@ body {
 }
 
 /* Price styles */
-.menu-card .price {
-  font-size: 1.5rem; /* Larger font size for price */
-  color: #388e3c; /* Green color for price */
-  margin-top: 0.5rem; /* Margin above the price */
-}
+
 
 /* Card hover effects */
 .menu-card:hover {
@@ -158,4 +129,13 @@ body {
 
 .button-custom:hover {
   background-color: #66bb6a; /* Lighter green on hover */
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
 }
