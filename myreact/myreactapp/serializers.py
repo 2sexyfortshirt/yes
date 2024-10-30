@@ -4,7 +4,13 @@ from .models import Menu, Dish,Cart, CartItem,Order,Ingredients
 # Укажите поля, которые хотите сериализовать
 
 class CustomBurgerSerializer(serializers.Serializer):
+    menu_id = serializers.IntegerField()
     ingredients = serializers.PrimaryKeyRelatedField(queryset=Ingredients.objects.all(), many=True)
+
+    def validate_menu_id(self, value):
+        if not Menu.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Указанный тип блюда не существует.")
+        return value
 
     def validate_ingredients(self, value):
         if not value:
@@ -21,22 +27,24 @@ class IngredientsSerializer(serializers.ModelSerializer):
 
 class DishSerializer(serializers.ModelSerializer):
     ingredients = IngredientsSerializer(many=True, read_only=True)
+    dish_type = serializers.CharField(source='menu.dish_type', allow_null=True, required=False)
     class Meta:
         model = Dish
-        fields = ['id', 'name', 'description', 'price', 'menu','ingredients','picture']  # Убедитесь, что поля корректные
+        fields = ['id', 'name', 'description', 'price', 'menu','ingredients','picture','dish_type']  # Убедитесь, что поля корректные
 
 
 # Сериализатор для модели CartItem
 class CartItemSerializer(serializers.ModelSerializer):
     dish = DishSerializer()
     ingredients = IngredientsSerializer(many=True, read_only=True)
+    dish_type = serializers.CharField(source='menu.dish_type',  required=False)
 
 
 
 
     class Meta:
         model = CartItem
-        fields = [ 'id','dish', 'quantity','ingredients']  # Убедитесь, что поля корректные
+        fields = [ 'id','dish', 'quantity','ingredients','dish_type']  # Убедитесь, что поля корректные
 
     def update(self, instance, validated_data):
         new_quantity = validated_data.get('quantity', instance.quantity)

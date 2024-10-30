@@ -13,6 +13,7 @@ const AddToCartButton = ({ dishId,selectedIngredients,updateCart }) => {
         dish_id: dishId,
         quantity: 1,
         ingredients: selectedIngredients,
+
       });
       updateCart(response.data.cart_item);
       setCartMessage('Блюдо добавлено в корзину!');

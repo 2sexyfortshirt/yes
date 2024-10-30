@@ -207,14 +207,22 @@ def add_custom_burger_to_cart(request):
             session_key = request.session.session_key
             if not session_key:
                 request.session.create()
+
             # Создаем кастомный бургер
             cart, created = Cart.objects.get_or_create(session_key=request.session.session_key, is_ordered=False)
 
-
+            menu_id = request.data.get('menu_id')
+            try:
+                menu = Menu.objects.get(id=menu_id)
+                dish_type = menu.dish_type
+            except Menu.DoesNotExist:
+                return Response({"error": "Меню не найдено"}, status=status.HTTP_404_NOT_FOUND)
 
             # Добавляем кастомный бургер в корзину как элемент
             cart_item = CartItem.objects.create(
                 cart=cart,
+                menu_id=menu_id,
+                custom_dish_type=dish_type,
 
 
                 # Здесь добавьте дополнительные поля, если они нужны

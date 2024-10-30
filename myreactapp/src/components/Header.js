@@ -3,6 +3,7 @@ import { Badge, IconButton, Modal, Typography, Box } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
 
+
 import axios from 'axios';
 import './Header.css';
 
@@ -10,6 +11,7 @@ const Header = ({ cartData, setCartData }) => {
   const [localCartData, setLocalCartData] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [open, setOpen] = useState(false);
+
 
   // Обновляем локальное состояние и количество товаров
   useEffect(() => {
@@ -97,7 +99,7 @@ const Header = ({ cartData, setCartData }) => {
   ) : (
     localCartData.map((item) => (
       <li key={item.id} style={{ marginBottom: '1rem' }}>
-        <h2>{item.dish?.name || 'Без названия'}</h2> {/* Проверка на существование item.dish */}
+        <h2>{item.dish?.name || item.dish_type}</h2> {/* Проверка на существование item.dish */}
         <p>Количество: {item.quantity}</p>
         <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
       </li>

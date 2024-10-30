@@ -28,6 +28,7 @@ axios.defaults.withCredentials = true;
 
 const MenuList = () => {
   const [menuData, setMenuData] = useState([]);
+    const [selectedDishType, setSelectedDishType] = useState('');
   const [selectedMenuId, setSelectedMenuId] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [ingredients, setIngredients] = useState([]);
@@ -102,6 +103,9 @@ const MenuList = () => {
     try {
       const response = await axios.post('http://localhost:8000/api/cart/add_custom_burger/', {
         ingredients: selectedIngredients,
+         menu_id: selectedMenuId,
+
+
       });
 
       if (response.status === 201) {

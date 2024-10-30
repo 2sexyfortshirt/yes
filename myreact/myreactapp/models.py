@@ -51,6 +51,9 @@ class CartItem(models.Model):
     dish = models.ForeignKey(Dish, related_name='cart_items', on_delete=models.CASCADE, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     ingredients = models.ManyToManyField(Ingredients, blank=True)
+    menu = models.ForeignKey(Menu, null=True, blank=True, on_delete=models.CASCADE)  # Новое поле для menu
+    custom_dish_type = models.CharField(max_length=100, blank=True, null=True)  # Тип кастомного блюда
+
 
 
 
