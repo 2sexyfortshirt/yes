@@ -6,6 +6,7 @@ import {Typography,Button} from '@mui/material';
 
 
 
+
 axios.defaults.withCredentials = true;
 
 const Cart = ({ cartData, setCartData}) => {
@@ -108,32 +109,49 @@ const Cart = ({ cartData, setCartData}) => {
     setDeliveryAddress(event.target.value);
   };
 
-  const handleRemoveItem = async (itemId) => {
-    try {
-      const response = await axios.delete(`http://localhost:8000/api/delete_item/${itemId}/`);
-      if (response.data.success) {
-        setCartData((prevItems) => prevItems.filter((item) => item.id !== itemId));
-      }
-    } catch (error) {
-      console.error("Ошибка при удалении предмета:", error);
+const handleRemoveItem = async (itemId) => {
+  try {
+    const response = await axios.delete(`http://localhost:8000/api/delete_item/${itemId}/`);
+    if (response.data.success) {
+      setCartData((prevItems) => {
+        const updatedItems = prevItems.filter((item) => item.id !== itemId);
+        // Корзина не должна быть пустой, если остались другие блюда
+        return updatedItems;
+      });
     }
-  };
-  const handleRemoveIngredient = async (ingredientId) => {
+  } catch (error) {
+    console.error("Ошибка при удалении предмета:", error);
+  }
+};
+
+const handleRemoveIngredient = async (ingredientId) => {
   try {
     const response = await axios.delete(`http://localhost:8000/api/remove_ingredient/${ingredientId}/`);
     if (response.data.success) {
-      // Обновляем данные корзины, удаляя выбранный ингредиент
-      setCartData(prevItems =>
-        prevItems.map(item => {
+      setCartData((prevItems) => {
+        const updatedItems = prevItems.map(item => {
           const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
-          return { ...item, ingredients: updatedIngredients };
-        })
-      );
+
+          // Если все ингредиенты кастомного блюда удалены, мы проверяем, есть ли еще обычные блюда в корзине
+          if (updatedIngredients.length === 0 && item.dish_type) {
+            return null; // Удаляем кастомное блюдо, если не осталось ингредиентов
+          }
+
+          return { ...item, ingredients: updatedIngredients }; // Возвращаем обновленное блюдо
+        }).filter(item => item !== null); // Удаляем кастомные блюда, если у них нет ингредиентов
+
+        // Если корзина теперь пуста (не осталось обычных или кастомных блюд), вы можете выполнить дополнительные действия
+        if (updatedItems.length === 0) {
+          console.log("Корзина пуста");
+        }
+
+        return updatedItems; // Возвращаем обновленное состояние корзины
+      });
     } else {
       console.error(response.data.message);
     }
   } catch (error) {
-    console.error('Ошибка при удалении ингредиента:', error);
+    console.error("Ошибка при удалении ингредиента:", error);
   }
 };
 

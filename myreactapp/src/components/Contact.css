@@ -1,8 +1,9 @@
 /* Contact.css */
 
 .contact-container {
+      margin: 200px auto 0;
     max-width: 800px; /* Максимальная ширина контейнера */
-    margin: 0 auto; /* Центрирование контейнера */
+    min-height: 400px;/* Центрирование контейнера */
     padding: 20px; /* Отступы вокруг контейнера */
     background-color: #f9f9f9; /* Светлый фон */
     border-radius: 8px; /* Скругленные углы */
@@ -20,7 +21,9 @@
     line-height: 1.6; /* Высота строки для лучшей читаемости */
 }
 
-.social-links {
+.social-links  {
+
+
     display: flex; /* Flexbox для расположения иконок в ряд */
     justify-content: center; /* Центрирование иконок */
     margin-top: 20px; /* Отступ сверху */
@@ -31,8 +34,10 @@
 }
 
 .social-links img {
+        margin: 100px auto 0;
     width: 40px; /* Ширина иконок */
     height: 40px; /* Высота иконок */
+
     transition: transform 0.2s; /* Плавный эффект при наведении */
 }
 

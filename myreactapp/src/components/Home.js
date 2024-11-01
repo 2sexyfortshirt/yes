@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import Slider from "react-slick"; // Import Slider
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { ShoppingCart } from '@mui/icons-material';
 const settings = {
     dots: true,
     infinite: true,
@@ -39,16 +40,28 @@ const Home = () => {
             </Typography>
 
             {/* Call to Action Button */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
             <Button
-                variant="contained"
-                color="secondary"
-                size="large"
-                component={Link}
-                to="/menu"
-                sx={{ display: 'block', margin: '0 auto', marginTop: '20px' }}
-            >
-                Order Now
-            </Button>
+    variant="outlined"
+
+    sx={{
+        borderColor: '#ff5722', // Цвет рамки
+        color: '#ff5722', // Цвет текста
+        padding: '10px 20px',
+        borderRadius: '8px',
+
+        '&:hover': {
+            backgroundColor: '#ff5722',
+            color: '#fff',
+        },
+    }}
+    component={Link}
+    to="/menu"
+>
+    <ShoppingCart sx={{ marginRight: '8px' }} /> {/* Иконка перед текстом */}
+    <Typography variant="button">Order Now</Typography>
+</Button>
+</div>
               {/* Slider Section */}
             <div style={{ margin: '40px 0' }}>
                 <Slider {...settings}>
