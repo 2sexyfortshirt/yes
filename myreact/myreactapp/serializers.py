@@ -35,6 +35,7 @@ class DishSerializer(serializers.ModelSerializer):
 
 # Сериализатор для модели CartItem
 class CartItemSerializer(serializers.ModelSerializer):
+
     dish = DishSerializer()
     ingredients = IngredientsSerializer(many=True, read_only=True)
     dish_type = serializers.CharField(source='menu.dish_type',  required=False)
@@ -44,7 +45,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = [ 'id','dish', 'quantity','ingredients','dish_type']  # Убедитесь, что поля корректные
+        fields = [ 'id','dish', 'quantity','ingredients','dish_type', 'custom_dish_price']
 
     def update(self, instance, validated_data):
         new_quantity = validated_data.get('quantity', instance.quantity)
@@ -76,10 +77,11 @@ class MenuSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     cart = CartSerializer()
+    items = CartItemSerializer(many=True, source='cart.items')
 
 
     class Meta:
         model = Order
-        fields = ['id', 'cart', 'status','total_price']
+        fields = ['id', 'cart', 'status','total_price','items']
 
 

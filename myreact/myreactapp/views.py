@@ -124,12 +124,15 @@ def create_order(request):
         cart = Cart.objects.get(session_key=user_session, is_ordered=False)
         total_price = 0
         for item in cart.items.all():
-            dish = item.dish
-            if dish is None:
-                # Option 1: Skip this item (continue to next iteration)
-                continue
-            total_price += dish.price * item.quantity
-            print(f'Item: {item.dish.name}, Ingredients: {item.ingredients.all()}')
+            if item.dish:
+                # For standard dishes, use dish price
+                total_price += item.dish.price * item.quantity
+                print(f'Item: {item.dish.name}, Ingredients: {item.ingredients.all()}')
+            else:
+                # For custom dishes, use custom_dish_price (already set in add_custom_burger_to_cart)
+                if item.custom_dish_price is None:
+                    print(f"Error: custom_dish_price is not set for {item.custom_dish_type}")
+                total_price += item.custom_dish_price * item.quantity
 
         for ingredient in item.ingredients.all():
             if ingredient.extra_cost is not None:
@@ -215,6 +218,8 @@ def add_custom_burger_to_cart(request):
             try:
                 menu = Menu.objects.get(id=menu_id)
                 dish_type = menu.dish_type
+                custom_dish_price = 20.00 if dish_type == 'Burgers' else 10.00 if dish_type == 'Pizza' else 0.00
+
             except Menu.DoesNotExist:
                 return Response({"error": "Меню не найдено"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -223,6 +228,7 @@ def add_custom_burger_to_cart(request):
                 cart=cart,
                 menu_id=menu_id,
                 custom_dish_type=dish_type,
+                custom_dish_price=custom_dish_price
 
 
                 # Здесь добавьте дополнительные поля, если они нужны

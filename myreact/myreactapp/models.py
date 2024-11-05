@@ -53,6 +53,7 @@ class CartItem(models.Model):
     ingredients = models.ManyToManyField(Ingredients, blank=True)
     menu = models.ForeignKey(Menu, null=True, blank=True, on_delete=models.CASCADE)  # Новое поле для menu
     custom_dish_type = models.CharField(max_length=100, blank=True, null=True)  # Тип кастомного блюда
+    custom_dish_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
 
 
@@ -77,6 +78,7 @@ class Order(models.Model):
     phone_number = models.CharField(max_length=15,blank=True)
     delivery_address = models.CharField(max_length=255,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return f"Order {self.id} for cart {self.cart.id}"
