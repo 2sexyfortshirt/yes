@@ -36,21 +36,7 @@ const About = () => {
         </Button>
       </div>
 
-      <Typography variant="h6" align="center" sx={{ margin: '20px 0' }}>
-        Find Us
-      </Typography>
-      <div style={{ textAlign: 'center', margin: '20px 0' }}>
-        <iframe
-          title="Location Map"
-          src="https://www.google.com/maps/embed?pb=...your-map-url..."
-          width="600"
-          height="450"
-          style={{ border: 0 }}
-          allowFullScreen=""
-          loading="lazy"
-        ></iframe>
       </div>
-    </div>
   );
 };
 

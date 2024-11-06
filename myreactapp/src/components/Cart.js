@@ -124,23 +124,31 @@ const handleRemoveItem = async (itemId) => {
   }
 };
 
-const handleRemoveIngredient = async (ingredientId) => {
+const handleRemoveIngredient = async (ingredientId,itemId) => {
   try {
     const response = await axios.delete(`http://localhost:8000/api/remove_ingredient/${ingredientId}/`);
+
     if (response.data.success) {
       setCartData((prevItems) => {
-        const updatedItems = prevItems.map(item => {
-          const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
+        const updatedItems = prevItems
+          .map(item => {
 
-          // Если все ингредиенты кастомного блюда удалены, мы проверяем, есть ли еще обычные блюда в корзине
-          if (updatedIngredients.length === 0 && item.dish_type) {
-            return null; // Удаляем кастомное блюдо, если не осталось ингредиентов
+
+            // Проверяем, содержит ли блюдо удаляемый ингредиент и удаляем его из списка ингредиентов блюда
+            const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
+
+
+
+            // Если у кастомного блюда больше нет ингредиентов, удаляем его из корзины
+          if (item.dish_type && updatedIngredients.length === 0) {
+            return null; // Удаляем только это кастомное блюдо
           }
 
-          return { ...item, ingredients: updatedIngredients }; // Возвращаем обновленное блюдо
-        }).filter(item => item !== null); // Удаляем кастомные блюда, если у них нет ингредиентов
+            // Обновляем ингредиенты для блюда и возвращаем его, если хотя бы один ингредиент остался
+            return { ...item, ingredients: updatedIngredients };
+          }).filter(item => item !== null); // Удаляем все `null` значения, оставляя только блюда с ингредиентами
 
-        // Если корзина теперь пуста (не осталось обычных или кастомных блюд), вы можете выполнить дополнительные действия
+        // Проверка, если корзина пуста после обновления
         if (updatedItems.length === 0) {
           console.log("Корзина пуста");
         }
@@ -154,7 +162,6 @@ const handleRemoveIngredient = async (ingredientId) => {
     console.error("Ошибка при удалении ингредиента:", error);
   }
 };
-
 
   const handleOrder = async () => {
   if (!phone || !deliveryAddress) {
@@ -222,9 +229,14 @@ const handleRemoveIngredient = async (ingredientId) => {
                 <pre>{JSON.stringify(item, null, 2)}</pre> {/* Отображение данных элемента */}
                 {item.dish ? (
                   <>
-                    <h2>{item.dish_type}</h2>
+                    <h2>{item.custom_dish_type}</h2>
                     <p>Название: {item.dish?.name || "Нет названия"}</p>
                     <p>Количество: {item.quantity}</p>
+
+
+                    <p>Цена: ${item.custom_dish_price || item.dish.price}</p>
+
+
                     {item.ingredients && item.ingredients.length > 0 ? (
                       <div>
                         <h4>Ингредиенты:</h4>
@@ -243,13 +255,18 @@ const handleRemoveIngredient = async (ingredientId) => {
                           ))}
                         </ul>
                       </div>
-                    ) : (
-                       <div>
-            <p>Ингредиенты не выбраны</p>
 
-          </div>
 
-                    )}
+                       ) : !item.dish?.name ? ( // Добавлено условие
+                      <p>Ингредиенты не выбраны</p>
+                    ) : null}
+
+
+
+
+
+
+
                     <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
                     <span>{item.quantity}</span>
                     <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
@@ -257,7 +274,10 @@ const handleRemoveIngredient = async (ingredientId) => {
                   </>
                 ) : (
                   <>
-                   <h2>{item.dish_type }</h2> {/* Здесь выводим кастомный dish_type */}
+                   <h2>{item.dish_type } </h2> {/* Здесь выводим кастомный dish_type */}
+                   <p>Цена: ${item.custom_dish_price || item.dish.price}</p>
+
+
 
                     {item.ingredients && item.ingredients.length > 0 ? (
                       <div>

@@ -1,6 +1,7 @@
 /* About.css */
-
 .about-container {
+    position: relative; /* или absolute/ fixed в зависимости от нужд */
+    top: 100px; /* Сдвигаем контейнер вниз */
     max-width: 800px; /* Максимальная ширина контейнера */
     margin: 0 auto; /* Центрирование контейнера */
     padding: 20px; /* Отступы вокруг контейнера */
