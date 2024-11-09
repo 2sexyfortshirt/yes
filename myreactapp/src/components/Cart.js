@@ -124,39 +124,18 @@ const handleRemoveItem = async (itemId) => {
   }
 };
 
-const handleRemoveIngredient = async (ingredientId,itemId) => {
+const handleRemoveIngredient = async (itemId, ingredientId) => {
   try {
-    const response = await axios.delete(`http://localhost:8000/api/remove_ingredient/${ingredientId}/`);
-
+    const response = await axios.delete(`http://localhost:8000/api/remove_ingredient/${itemId}/${ingredientId}/`);
     if (response.data.success) {
-      setCartData((prevItems) => {
-        const updatedItems = prevItems
-          .map(item => {
-
-
-            // Проверяем, содержит ли блюдо удаляемый ингредиент и удаляем его из списка ингредиентов блюда
-            const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
-
-
-
-            // Если у кастомного блюда больше нет ингредиентов, удаляем его из корзины
-          if (item.dish_type && updatedIngredients.length === 0) {
-            return null; // Удаляем только это кастомное блюдо
-          }
-
-            // Обновляем ингредиенты для блюда и возвращаем его, если хотя бы один ингредиент остался
-            return { ...item, ingredients: updatedIngredients };
-          }).filter(item => item !== null); // Удаляем все `null` значения, оставляя только блюда с ингредиентами
-
-        // Проверка, если корзина пуста после обновления
-        if (updatedItems.length === 0) {
-          console.log("Корзина пуста");
+      setCartData((prevItems) => prevItems.map((item) => {
+        if (item.id === itemId) {
+          const updatedIngredients = item.ingredients.filter(ingredient => ingredient.id !== ingredientId);
+          if (updatedIngredients.length === 0) return null;
+          return { ...item, ingredients: updatedIngredients };
         }
-
-        return updatedItems; // Возвращаем обновленное состояние корзины
-      });
-    } else {
-      console.error(response.data.message);
+        return item;
+      }).filter(item => item !== null));
     }
   } catch (error) {
     console.error("Ошибка при удалении ингредиента:", error);
@@ -245,7 +224,7 @@ const handleRemoveIngredient = async (ingredientId,itemId) => {
                             <li key={ingredient.id}>
                               {ingredient.name} (доп. цена: {ingredient.extra_cost})
                                <button
-                    onClick={() => handleRemoveIngredient( ingredient.id)}
+                    onClick={() => handleRemoveIngredient( item.id,ingredient.id)}
                     style={{ marginLeft: '10px', color: 'red' }}
                   >
                     Удалить
@@ -287,7 +266,7 @@ const handleRemoveIngredient = async (ingredientId,itemId) => {
                             <li key={ingredient.id}>
                               {ingredient.name} (доп. цена: {ingredient.extra_cost})
                                <button
-                    onClick={() => handleRemoveIngredient(ingredient.id)}
+                    onClick={() => handleRemoveIngredient(item.id,ingredient.id)}
                     style={{ marginLeft: '10px', color: 'red' }}
                   >
                     Удалить

@@ -243,23 +243,21 @@ def add_custom_burger_to_cart(request):
 
 
 @api_view(['DELETE'])
-def remove_ingredient_from_cart(request, ingredient_id):
+def remove_ingredient_from_cart(request, ingredient_id,item_id):
     user_session = request.session.session_key
     if not user_session:
         return Response({'error' : 'No active session'},status=status.HTTP_400_BAD_REQUEST)
     try:
+        cart = get_object_or_404(Cart,session_key=user_session,is_ordered=False)
+        cart_item = get_object_or_404(CartItem,id=item_id,cart=cart)
         # Получаем ингредиент
         ingredient = get_object_or_404(Ingredients, id=ingredient_id)
 
-        cart_items_with_ingredient = ingredient.cartitem_set.all()
+        cart_item.ingredients.remove(ingredient)
 
-        for cart_item in cart_items_with_ingredient:
-            # Удаляем ингредиент из текущего CartItem
-            cart_item.ingredients.remove(ingredient)
-
-            if not cart_item.ingredients.exists():
-                # Если ингредиентов больше нет, удаляем CartItem
-                cart_item.delete()
+        if not cart_item.ingredients.exists() and cart_item.custom_dish_type:
+            # Если ингредиентов больше нет, удаляем CartItem
+            cart_item.delete()
 
         # Удаляем ингредиент из всех связанных CartItems
 

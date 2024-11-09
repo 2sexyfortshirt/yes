@@ -22,6 +22,6 @@ urlpatterns = [
     path('api/delete_item/<int:item_id>/',delete_item, name='delete_item'),
     path('api/ingredients/', IngredientsList.as_view(), name='ingredient-list'),
     path('api/cart/add_custom_burger/', add_custom_burger_to_cart, name='add_custom_burger_to_cart'),
-    path('api/remove_ingredient/<int:ingredient_id>/', remove_ingredient_from_cart, name='remove_ingredient_from_cart'),
+    path('api/remove_ingredient/<int:item_id>/<int:ingredient_id>/', remove_ingredient_from_cart, name='remove_ingredient_from_cart'),
 ]
 
