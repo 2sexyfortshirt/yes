@@ -6,7 +6,7 @@ import axios from 'axios';
 import './MenuStyles.css';
 import {
   Container,
-  Typography,
+  Modal,
   List,
   Collapse,
   Grid,
@@ -17,10 +17,11 @@ import {
   FormControlLabel,
   Box,
   Button,
-   Dialog,
+  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Typography,
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
@@ -28,13 +29,13 @@ axios.defaults.withCredentials = true;
 
 const MenuList = () => {
   const [menuData, setMenuData] = useState([]);
-    const [selectedDishType, setSelectedDishType] = useState('');
   const [selectedMenuId, setSelectedMenuId] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-   const navigate = useNavigate();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -42,17 +43,16 @@ const MenuList = () => {
         const response = await axios.get('http://localhost:8000/menu/');
         setMenuData(response.data);
       } catch (error) {
-        console.error("Ошибка при загрузке меню:", error);
+        console.error('Error loading menu:', error);
       }
     };
-
 
     const fetchIngredients = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/ingredients/');
         setIngredients(response.data);
       } catch (error) {
-        console.error("Ошибка при загрузке ингредиентов:", error);
+        console.error('Error loading ingredients:', error);
       }
     };
 
@@ -61,219 +61,158 @@ const MenuList = () => {
     updateCart();
   }, []);
 
-  const handleMenuClick = (menuId) => {
-    setSelectedMenuId(prev => (prev === menuId ? null : menuId));
-  };
-
   const updateCart = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/get/');
       setCartItems(response.data.cart_items);
     } catch (error) {
-      console.error('Ошибка при обновлении корзины:', error);
+      console.error('Error updating cart:', error);
     }
   };
 
-  const handleIngredientChange = (ingredientId) => {
-    setSelectedIngredients((prev) => {
-      if (prev.includes(ingredientId)) {
-        return prev.filter(id => id !== ingredientId);
-      } else {
-        return [...prev, ingredientId];
-      }
-    });
+  const handleMenuClick = (menuId) => {
+    setSelectedMenuId((prev) => (prev === menuId ? null : menuId));
   };
- const ingredientAllowedMenus = {
-      3: { allowed: true, label: "Создать свою пиццу" },  // Пицца
-    2: { allowed: true, label: "Создать свой бургер" },  // Бургер
-};
 
-  const isIngredientSelectionAllowed = (menuId) => {
-     return ingredientAllowedMenus[menuId]?.allowed;
+  const handleIngredientChange = (ingredientId) => {
+    setSelectedIngredients((prev) =>
+      prev.includes(ingredientId)
+        ? prev.filter((id) => id !== ingredientId)
+        : [...prev, ingredientId]
+    );
   };
-  const getIngredientButtonLabel = (menuId) => {
-  return ingredientAllowedMenus[menuId]?.label;  // Возвращаем название кнопки
-};
-   const handleCreateCustomBurger = async () => {
+
+  const handleCreateCustomDish = async () => {
     if (selectedIngredients.length === 0) {
-      alert("Пожалуйста, выберите хотя бы один ингредиент!");
+      alert('Please select at least one ingredient!');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/cart/add_custom_burger/', {
+      const response = await axios.post('http://localhost:8000/api/cart/add_custom_dish/', {
         ingredients: selectedIngredients,
-         menu_id: selectedMenuId,
-
-
+        menu_id: selectedMenuId,
       });
 
       if (response.status === 201) {
-
-        updateCart(); // обновляем содержимое корзины
+        updateCart();
         navigate('/cart');
       }
     } catch (error) {
-      console.error("Ошибка при создании кастомного бургера:", error);
-      alert("Произошла ошибка при добавлении кастомного бургера в корзину.");
+      console.error('Error creating custom dish:', error);
     } finally {
-      setSelectedIngredients([]); // Сброс выбранных ингредиентов после добавления
-      handleCloseDialog(); // Закрываем диалог
+      setSelectedIngredients([]);
+      handleCloseDialog();
     }
   };
 
- const handleOpenDialog = () => {
+  const handleOpenDialog = () => {
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-     setSelectedIngredients([])
+    setSelectedIngredients([]);
   };
 
-
-
-
   return (
-<Container maxWidth="md" className="menu-container" style={{ marginTop: '7rem', width: '80%', maxWidth: '1200px' }}>
-  <Typography variant="h4" gutterBottom align="center">
-    Menu List
-  </Typography>
-  <List component="nav">
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: 'repeat(2, 1fr)',
-          sm: 'repeat(3, 1fr)',
-          md: 'repeat(5, 1fr)',
-        },
-        gap: '2rem',  // Увеличен отступ между элементами
-        marginBottom: '2rem',
-      }}
-    >
-      {menuData.map(menu => (
-        <div key={menu.id}>
-          <Box
-            onClick={() => handleMenuClick(menu.id)}
-            sx={{
-              width: '100%',  // Занимает всю ширину родительского блока
-              height: '80px',
-              backgroundColor: 'orange',
-              border: '2px solid #388e3c',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: '#ffffff',
-              boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
-              transition: 'box-shadow 0.2s',
-              '&:hover': {
-                backgroundColor: '#66bb6a',
-                boxShadow: '0px 8px 25px rgba(0, 0, 0, 0.3)',
-              },
-            }}
-          >
-            <RestaurantIcon sx={{ marginRight: 1 }} />
-            <Typography variant="h6" align="center">
-              {menu.dish_type}
-            </Typography>
-            {selectedMenuId === menu.id ? <ExpandLess /> : <ExpandMore />}
-          </Box>
-
-          {/* Анимация появления списка блюд */}
-          {selectedMenuId === menu.id && (
+    <Container maxWidth="md" className="menu-container" style={{ marginTop: '7rem', maxWidth: '1200px' }}>
+      <List component="nav">
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' },
+            gap: '1.5rem',
+            marginBottom: '2rem',
+          }}
+        >
+          {menuData.map((menu) => (
             <Box
+              key={menu.id}
+              onClick={() => handleMenuClick(menu.id)}
               sx={{
-                marginTop: '1rem',
-                opacity: 0,
-                animation: 'fadeIn 0.5s forwards',
+                padding: '1rem',
+                backgroundColor: '#f57c00',
+                borderRadius: '10px',
+                color: 'white',
+                textAlign: 'center',
+                cursor: 'pointer',
+                boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
+                '&:hover': { backgroundColor: '#ff9800', boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.3)' },
               }}
             >
-              {menu.dishes.map((dish) => (
-                <Typography key={dish.id} variant="body1">
-                  {dish.name}
-                </Typography>
-              ))}
+              <RestaurantIcon fontSize="large" />
+              <Typography variant="h6">{menu.dish_type}</Typography>
+              {selectedMenuId === menu.id ? <ExpandLess /> : <ExpandMore />}
             </Box>
-          )}
+          ))}
+        </Box>
 
-          <Collapse in={selectedMenuId === menu.id} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <Grid container spacing={2} style={{ padding: '1rem' }}>
-                {menu.dishes.map(dish => (
-                  <Grid item xs={12} key={dish.id}>
-                    <Card className="menu-card" style={{ width: '100%', marginBottom: '1rem' }}>
-                      <CardContent className="menu-card">
-                        <Typography variant="h6" component="div" style={{ height: '50px' }}>
-                          {dish.name}
-                        </Typography>
-                        <img src={`http://localhost:8000/${dish.picture}`} alt={dish.name} style={{ width: '100%', height: 'auto' }} />
-                        <Typography variant="body2" color="text.secondary">
-                          {dish.description}
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.primary" style={{ width: '50px' }}>
-                          Цена: ${dish.price}
+        {menuData.map((menu) =>
+          selectedMenuId === menu.id ? (
+            <Collapse key={menu.id} in={selectedMenuId === menu.id}>
+              <Grid container spacing={2}>
+                {menu.dishes.map((dish) => (
+                  <Grid item xs={12} sm={6} md={4} key={dish.id}>
+                    <Card sx={{ borderRadius: '12px', boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)' }}>
+                      <CardContent>
+                        <Typography variant="h6">{dish.name}</Typography>
+                        <img
+                          src={`http://localhost:8000/${dish.picture}`}
+                          alt={dish.name}
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                            borderRadius: '8px',
+                            marginBottom: '0.5rem',
+                          }}
+                        />
+                        <Typography variant="body2">{dish.description}</Typography>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                          Price: ${dish.price}
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <AddToCartButton
-                          dishId={dish.id}
-                          selectedIngredients={selectedIngredients}
-                          updateCart={updateCart}
-                        />
+                        <AddToCartButton dishId={dish.id} updateCart={updateCart} />
                       </CardActions>
                     </Card>
                   </Grid>
                 ))}
               </Grid>
+            </Collapse>
+          ) : null
+        )}
+      </List>
 
-              {/* Кнопка для кастомизации бургера */}
-              {isIngredientSelectionAllowed(menu.id) && (
-                <Box textAlign="center" marginTop="1rem">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpenDialog}
-                  >
-                    {getIngredientButtonLabel(menu.id)} {/* Название кнопки */}
-                  </Button>
-                </Box>
-              )}
-            </List>
-          </Collapse>
-        </div>
-      ))}
-    </Box>
-  </List>
-
-  {/* Модальное окно для выбора ингредиентов */}
-  <Dialog open={openDialog} onClose={handleCloseDialog}>
-    <DialogTitle>Выберите ингредиенты</DialogTitle>
-    <DialogContent>
-      {ingredients.map(ingredient => (
-        <FormControlLabel
-          key={ingredient.id}
-          control={
-            <Checkbox
-              checked={selectedIngredients.includes(ingredient.id)}
-              onChange={() => handleIngredientChange(ingredient.id)}
-            />
-          }
-          label={ingredient.name}
-        />
-      ))}
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={handleCloseDialog} color="primary">Отмена</Button>
-      <Button onClick={handleCreateCustomBurger} color="primary">
-        {getIngredientButtonLabel(selectedMenuId)} {/* Название действия */}
-      </Button>
-    </DialogActions>
-  </Dialog>
-</Container>
-
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Select Ingredients</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={1}>
+            {ingredients.map((ingredient) => (
+              <Grid item xs={6} sm={4} key={ingredient.id}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={selectedIngredients.includes(ingredient.id)}
+                      onChange={() => handleIngredientChange(ingredient.id)}
+                    />
+                  }
+                  label={ingredient.name}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} variant="outlined">
+            Cancel
+          </Button>
+          <Button onClick={handleCreateCustomDish} variant="contained" color="primary">
+            Add to Cart
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

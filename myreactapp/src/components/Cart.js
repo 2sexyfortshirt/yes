@@ -208,7 +208,13 @@ const handleRemoveIngredient = async (itemId, ingredientId) => {
                 <pre>{JSON.stringify(item, null, 2)}</pre> {/* Отображение данных элемента */}
                 {item.dish ? (
                   <>
-                    <h2>{item.custom_dish_type}</h2>
+                    <h2>
+                      {item.dish_type === 'Burgers'
+                        ? 'Your Special Burger'
+                        : item.dish_type === 'Pizza'
+                        ? 'Special Pizza'
+                        : item.custom_dish_type}
+                    </h2>
                     <p>Название: {item.dish?.name || "Нет названия"}</p>
                     <p>Количество: {item.quantity}</p>
 
@@ -253,7 +259,12 @@ const handleRemoveIngredient = async (itemId, ingredientId) => {
                   </>
                 ) : (
                   <>
-                   <h2>{item.dish_type } </h2> {/* Здесь выводим кастомный dish_type */}
+                   <h2>   {item.dish_type === 'Burgers'
+                        ? 'Your Special Burger'
+                        : item.dish_type === 'Pizza'
+                        ? 'Special Pizza'
+                        : item.dish_type}
+                    </h2>
                    <p>Цена: ${item.custom_dish_price || item.dish.price}</p>
 
 
@@ -283,9 +294,23 @@ const handleRemoveIngredient = async (itemId, ingredientId) => {
 
 
                     )}
+                    {/* Кнопки для изменения количества кастомного блюда */}
+                    <button
+                      onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}  // Отключаем кнопку, если количество <= 1
+                    >
+                      -
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
                     <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
                   </>
                 )}
+
               </li>
             ))}
           </ul>

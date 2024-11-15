@@ -51,6 +51,7 @@ def add_to_cart(request):
     dish_id = request.data.get('dish_id')
     quantity = request.data.get('quantity', 1)
     ingredients = request.data.get('ingredients')
+
     print('Ingredients:', ingredients)
 
     try:
@@ -223,15 +224,18 @@ def add_custom_burger_to_cart(request):
             except Menu.DoesNotExist:
                 return Response({"error": "Меню не найдено"}, status=status.HTTP_404_NOT_FOUND)
 
+
+
             # Добавляем кастомный бургер в корзину как элемент
             cart_item = CartItem.objects.create(
                 cart=cart,
                 menu_id=menu_id,
                 custom_dish_type=dish_type,
-                custom_dish_price=custom_dish_price
+                custom_dish_price=custom_dish_price,
+                quantity=request.data.get('quantity', 1)
 
 
-                # Здесь добавьте дополнительные поля, если они нужны
+            # Здесь добавьте дополнительные поля, если они нужны
             )
             cart_item.ingredients.set(serializer.validated_data['ingredients'])  # Добавляем ингредиенты
             cart_item.save()

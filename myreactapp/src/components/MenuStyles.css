@@ -65,6 +65,23 @@ body {
 
 /* Adaptation for mobile devices */
 @media (max-width: 600px) {
+.menu-container {
+    width: 95%;
+    padding: 1rem;
+  }
+  .menu-card {
+    margin: 1rem 0;
+  }
+  .MuiTypography-h4 {
+    font-size: 1.8rem;
+  }
+  .MuiTypography-body1 {
+    font-size: 1rem;
+  }
+  .MuiButton-root {
+    font-size: 0.9rem;
+  }
+
   .menu-box {
     width: 90px; /* Adjust for smaller screens */
     height: 90px; /* Adjust for smaller screens */
